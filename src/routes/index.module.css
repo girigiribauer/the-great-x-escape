@@ -1,0 +1,112 @@
+/* TOP(トップページ)専用スタイル。縦リズムは margin-bottom に統一。 */
+
+.main {
+  font-family: serif;
+  max-width: 46rem;
+  margin: 2rem auto;
+  padding: 0 1.25rem;
+  color: var(--ink);
+  /* ブロック間の余白は親が gap で所有(各ブロックは外部マージンを持たない)。 */
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+/* --- ヒーロー(トンネル画像 + ロゴ + カウント) --- */
+.hero {
+  position: relative;
+}
+
+.heroImg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* 上部を暗く落としてロゴの可読性を確保。トンネルの光は下側に残す。 */
+.heroScrim {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(180deg,
+      rgba(30, 10, 8, 0.96) 0%,
+      rgba(30, 10, 8, 0.5) 28%,
+      rgba(30, 10, 8, 0) 58%);
+}
+
+.heroTitle {
+  position: absolute;
+  top: 5%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  margin: 0;
+  text-align: center;
+}
+
+.heroLogo {
+  width: min(260px, 54%);
+  height: auto;
+  display: inline-block;
+}
+
+.heroCount {
+  position: absolute;
+  bottom: 18%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  margin: 0;
+  text-align: center;
+  font-size: 1.05rem;
+  text-shadow: 0 0 5px #fff;
+}
+
+.countNum {
+  font-size: 1.6rem;
+  color: var(--accent);
+  text-shadow: 0 0 5px var(--accent);
+}
+
+.countLoading {
+  color: var(--ink-dim);
+}
+
+/* --- リード文 --- */
+.lead {
+  margin: 0;
+  line-height: 1.9;
+}
+
+/* X OAuth 失敗時に TOP へ戻された際のエラー文(?x_error=…)。 */
+.error {
+  margin: 0;
+  color: #e0555f;
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+/* --- CTA --- */
+.cta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  /* TOP はフッターにロゴが無く薄いので、ボタンと詰まらないよう下に余白を足す。 */
+  margin-bottom: 2rem;
+}
+
+.ctaBtn {
+  display: inline-block;
+  background: var(--accent);
+  color: #000;
+  font-weight: bold;
+  text-shadow: 0 0 1px #990000, 0 0 3px #ff7777, 0 0 6px #ff7777;
+  text-decoration: none;
+  padding: 0.65rem 1.5rem;
+  border-radius: 4px;
+  font-size: 1.05rem;
+  border: none;
+  font-family: inherit;
+  cursor: pointer;
+}

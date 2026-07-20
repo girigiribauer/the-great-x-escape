@@ -1,0 +1,7 @@
+# X大脱出 — クロール方針
+# トップ・about・login は発見のため許可。
+# 限定公開のトンネル(/t/…)と作成者専用の一覧(/tunnels)はクロール対象外。
+# ※ トンネルURLは推測不能なランダム slug で、どこにも公開リンクが無い(限定公開)。
+User-agent: *
+Disallow: /t/
+Disallow: /tunnels

@@ -1,0 +1,51 @@
+/* 全体の基調: 劇画調・往年の洋画ポスター風。黒地 × 差し色は朱赤(#ff0022)。
+   OGP ロゴと地続きにするための確定パレット。ライト/ダーク設定に関わらず暗背景で固定。 */
+:root {
+  color-scheme: dark;
+
+  --bg: #1e0a08; /* 赤みのある黒 */
+  --ink: #f3e6d8; /* 骨色(タグラインの白) */
+  --ink-dim: rgba(243, 230, 216, 0.6);
+  --ink-faint: rgba(243, 230, 216, 0.5);
+  --accent: #ff0022; /* ロゴの朱赤 = 差し色 */
+  --rule: #5a2018; /* 罫線用の暗いマルーン */
+  --panel: rgba(255, 255, 255, 0.02);
+  --panel-border: #3a201c;
+}
+
+/* 背景を敷いてビューポートを満たすのは html 側の役割。 */
+html {
+  min-height: 100vh;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--ink);
+}
+
+/* スティッキーフッター: コンテンツが短くても最低ビューポート高を確保し、main を
+   伸ばして余った縦スペースを吸わせる。フッターは各ページ .main(flex 縦)の最後の子で、
+   SiteFooter 側の margin-top:auto により下端へ寄る。
+   #app の直下は main のみ(dev で挿さる <style> は display:none なので flex に影響しない)。
+   主軸で伸ばすので main の上下マージンは 100vh に足し算されず、不要な縦スクロールも出ない。 */
+#app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+main {
+  flex: 1 0 auto;
+  /* flex 子になると .main の左右 auto マージン(中央寄せ)が stretch を打ち消し、
+     内容が短いページで max-width まで広がらず縮む。width:100% で常に器幅まで満たし、
+     max-width で頭打ちにして中央寄せを保つ。border-box で padding 込みでも溢れない。 */
+  width: 100%;
+  box-sizing: border-box;
+}
+
+a {
+  color: var(--accent);
+}

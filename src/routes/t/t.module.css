@@ -1,0 +1,389 @@
+/* /t/[slug](トンネルページ)専用スタイル。
+   操作は名簿の各行にインラインで内包(自分=アクションのプルダウン、他人=作成者のみ▾メニュー)。
+   縦リズムは margin-bottom に統一。 */
+
+.main {
+  font-family: serif;
+  max-width: 46rem;
+  margin: 3rem auto;
+  padding: 0 1.25rem;
+  color: var(--ink);
+  /* ブロック間の余白は"親"が所有(各ブロックは外部マージンを持たない=コンポーネント化しても正しい)。 */
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+}
+
+.loading {
+  color: var(--ink-dim);
+}
+
+/* --- 見つからない --- */
+.notFoundTitle {
+  letter-spacing: 0.05em;
+  color: var(--accent);
+}
+.notFoundBody {
+  color: var(--ink-dim);
+}
+
+/* --- ヘッダー --- */
+/* header + caption を1枚のタイトルカードとして束ねる(内部は密着、gap を入れない)。 */
+.masthead {
+  display: block;
+}
+
+.header {
+  border-bottom: 2px solid var(--rule);
+  padding-bottom: 1rem;
+}
+.headerTop {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: 1rem;
+  row-gap: 0.25rem;
+}
+.tunnelName {
+  margin: 0;
+  font-size: 1.5rem;
+  letter-spacing: 0.04em;
+}
+.tunnelIcon {
+  height: 22px;
+  width: 22px;
+  margin-right: 0.5rem;
+}
+.count {
+  color: var(--ink-faint);
+  margin: 0;
+  font-size: 0.85rem;
+}
+.shareNote {
+  color: var(--ink-faint);
+  margin: 0 0 0.6rem;
+  font-size: 0.8rem;
+  line-height: 1.6;
+}
+
+/* --- 字幕 --- */
+.caption {
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--ink);
+  letter-spacing: 0.06em;
+  line-height: 1.7;
+  margin: 0;
+  padding: 3rem 0;
+  border-bottom: 2px solid var(--rule);
+}
+
+/* --- 全員脱出のゴール演出(字幕スロットを画像で置き換え) --- */
+.escapeCard {
+  padding: 2rem 0;
+  border-bottom: 2px solid var(--rule);
+}
+.escapeImage {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin: 0 auto;
+  border-radius: 4px;
+}
+
+/* --- 未ログイン時の細いログイン導線(枠なし) --- */
+.loginPrompt {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  align-items: center;
+  font-size: 0.85rem;
+  color: var(--ink-dim);
+}
+.loginLink {
+  padding: 0.3rem 0.85rem;
+  background: var(--accent);
+  color: #000;
+  font-weight: bold;
+  text-decoration: none;
+  border-radius: 4px;
+}
+
+/* --- 名簿 --- */
+.listHead {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.9rem;
+  padding: 0 0 0.5rem;
+  color: var(--ink-faint);
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+}
+.listHeadNo {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+.listHeadName {
+  flex: 1;
+  min-width: 0;
+}
+.listHeadStatus {
+  flex-shrink: 0;
+  text-align: right;
+}
+
+.row {
+  border-bottom: 1px solid var(--panel-border);
+}
+.rowMine {
+  background: rgba(217, 164, 65, 0.05);
+}
+.rowMain {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 0.7rem 0;
+}
+.nameCell {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+.xlink {
+  font-size: 1.02rem;
+  color: var(--ink);
+  text-decoration: none;
+}
+.xlinkEscaped {
+  font-size: 1.02rem;
+  color: var(--ink-dim);
+  text-decoration: line-through;
+}
+.bskylink {
+  font-size: 1.02rem;
+  color: #9ec7d6;
+  text-decoration: none;
+}
+.youBadge {
+  font-size: 0.7rem;
+  color: #d9a441;
+}
+
+/* 自分の状態申告UI = 自分のアイデンティティ(名前の並び)に置く。作成者の▾とは別物。 */
+.selfControl {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+/* --- 右側: 操作 + 状況 --- */
+.controls {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.inlineSelect {
+  padding: 0.3rem 0.5rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(243, 230, 216, 0.22);
+  border-radius: 5px;
+  color: var(--ink);
+  font-size: 0.85rem;
+  font-family: inherit;
+  cursor: pointer;
+}
+.inlineSelect:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* 作成者だけに出る ▾ トリガーとメニュー */
+.menuWrap {
+  position: relative;
+  display: inline-flex;
+}
+.trigger {
+  background: none;
+  border: none;
+  color: var(--accent);
+  font-size: 0.9rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0.2rem 0.3rem;
+  border-radius: 4px;
+}
+.trigger:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+.menuBackdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+}
+.menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  z-index: 11;
+  margin-top: 0.25rem;
+  min-width: 6rem;
+  background: #241210;
+  border: 1px solid var(--panel-border);
+  border-radius: 5px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+}
+.menuItem {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 0.45rem 0.7rem;
+  background: none;
+  border: none;
+  color: var(--ink);
+  font-size: 0.85rem;
+  font-family: inherit;
+  cursor: pointer;
+}
+.menuItem:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+/* --- 状況スタンプ --- */
+.badge {
+  display: block;
+  text-align: right;
+  white-space: nowrap;
+}
+.badgeImg {
+  height: 1.7rem;
+  width: auto;
+  display: inline-block;
+}
+.badgeSuffix {
+  display: block;
+  color: var(--ink);
+  font-size: 0.8rem;
+  margin-top: 0.2rem;
+  letter-spacing: 0.02em;
+}
+
+/* --- メンバーアイコン --- */
+.icon {
+  position: relative;
+  width: 2.9rem;
+  height: 2.9rem;
+  flex: 0 0 auto;
+  border-radius: 5px;
+  overflow: hidden;
+}
+.iconImg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+.iconNo {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 8%;
+  text-align: center;
+  color: #fff;
+  font-weight: 800;
+  font-size: 0.72em;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  text-shadow: 0 0 3px rgba(0, 0, 0, 0.95);
+}
+
+/* --- Bluesky 紐付け(自分の行の2段目) --- */
+.bskyLine {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-left: 3.8rem;
+  padding-bottom: 0.7rem;
+}
+.bskyNote {
+  font-size: 0.72rem;
+  color: var(--ink-faint);
+}
+.bskyInput {
+  padding: 0.3rem 0.55rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(243, 230, 216, 0.22);
+  border-radius: 4px;
+  color: var(--ink);
+  font-size: 0.85rem;
+  font-family: inherit;
+  min-width: 11rem;
+}
+.bskyBtn {
+  padding: 0.3rem 0.75rem;
+  border-radius: 4px;
+  border: 1px solid #3a5a40;
+  background: transparent;
+  color: #74c185;
+  font-size: 0.82rem;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+/* --- その他 --- */
+.error {
+  color: #e0555f;
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+/* --- 共有ブロック(注意書き + URLコピー + 控える案内をひとまとめ) --- */
+.shareBlock {
+  padding: 0.9rem 1rem;
+  background: var(--panel);
+  border: 1px solid var(--panel-border);
+  border-radius: 6px;
+}
+.urlRow {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+.urlInput {
+  flex: 1;
+  min-width: 14rem;
+  padding: 0.4rem 0.6rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(243, 230, 216, 0.22);
+  border-radius: 4px;
+  color: var(--ink-dim);
+  font-size: 0.85rem;
+  font-family: inherit;
+}
+.copyBtn {
+  padding: 0.4rem 0.9rem;
+  border-radius: 4px;
+  border: 1px solid var(--accent);
+  background: transparent;
+  color: var(--accent);
+  font-size: 0.85rem;
+  font-family: inherit;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.shareWarn {
+  margin: 0;
+  color: var(--ink-faint);
+  font-size: 0.78rem;
+  line-height: 1.6;
+}
+

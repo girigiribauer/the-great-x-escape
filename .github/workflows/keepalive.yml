@@ -1,0 +1,32 @@
+name: Supabase keepalive
+
+# Supabase 無料枠は7日間アクティビティが無いと一時停止される。
+# 通常はユーザーのアクセスで /api/tunnel-count が叩かれて防げるが、
+# 無アクセスの日でも止めないよう、保険として1日1回 cron で叩く。
+#
+# 事前設定(1回だけ):
+#   リポジトリの Settings → Secrets and variables → Actions → Variables に
+#   APP_URL = 本番の公開URL(例: https://the-great-x-escape.vercel.app) を登録する。
+
+on:
+  schedule:
+    - cron: "17 3 * * *" # 毎日 03:17 UTC に1回
+  workflow_dispatch: {} # 手動実行も可
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping tunnel-count endpoint
+        run: |
+          if [ -z "${{ vars.APP_URL }}" ]; then
+            echo "::error::APP_URL variable is not set. Register it in repo Variables."
+            exit 1
+          fi
+          url="${{ vars.APP_URL }}/api/tunnel-count"
+          echo "Pinging $url"
+          code=$(curl -sS -o /tmp/out.json -w "%{http_code}" "$url")
+          echo "HTTP $code"
+          cat /tmp/out.json || true
+          echo
+          test "$code" = "200"

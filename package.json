@@ -1,0 +1,38 @@
+{
+  "name": "the-great-x-escape",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": "22.x"
+  },
+  "scripts": {
+    "dev": "vinxi dev --port 1963",
+    "build": "vinxi build",
+    "start": "vinxi start --port 1963",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:e2e": "playwright test",
+    "db:start": "supabase start",
+    "db:stop": "supabase stop",
+    "db:reset": "supabase db reset",
+    "db:push": "supabase db push",
+    "db:generate-types": "supabase gen types typescript --local 2>/dev/null > src/types/database.ts"
+  },
+  "dependencies": {
+    "@atproto/oauth-client-node": "^0.4.9",
+    "@solidjs/router": "^0.16.2",
+    "@solidjs/start": "^1.3.2",
+    "@supabase/supabase-js": "^2.110.7",
+    "solid-js": "^1.9.9",
+    "vinxi": "^0.5.11",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.61.1",
+    "@types/node": "^22.20.1",
+    "supabase": "^2.84.4",
+    "typescript": "^5.7.0",
+    "vitest": "^4.1.10"
+  }
+}

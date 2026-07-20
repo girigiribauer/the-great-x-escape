@@ -1,0 +1,98 @@
+/* /dig(トンネルを掘る)専用スタイル。
+   縦リズムは margin-bottom に統一(最後の要素は :last-child で殺す)。 */
+
+.main {
+  font-family: serif;
+  max-width: 46rem;
+  margin: 3rem auto;
+  padding: 0 1.25rem;
+  color: var(--ink);
+  /* ブロック間の余白は親が gap で所有(各ブロックは外部マージンを持たない)。 */
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.header {
+  border-bottom: 2px solid var(--rule);
+  padding-bottom: 1rem;
+}
+
+.eyebrow {
+  margin: 0 0 0.35rem;
+  color: var(--ink-faint);
+  letter-spacing: 0.2em;
+  font-size: 0.8rem;
+}
+
+.title {
+  margin: 0;
+  font-size: 2rem;
+  letter-spacing: 0.06em;
+}
+
+.field {
+  margin-bottom: 1.5rem;
+}
+
+.label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+}
+
+.textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.7rem 0.85rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(243, 230, 216, 0.22);
+  border-radius: 4px;
+  color: var(--ink);
+  font-size: 1rem;
+  font-family: inherit;
+  line-height: 1.6;
+  resize: vertical;
+}
+
+.textarea::placeholder {
+  color: var(--ink-faint);
+}
+
+.textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(255, 0, 34, 0.25);
+}
+
+.submitWrap {
+  text-align: center;
+  margin-bottom: 0.6rem;
+}
+
+.submit {
+  display: inline-block;
+  background: var(--accent);
+  color: #000;
+  font-weight: bold;
+  text-shadow: 0 0 1px #990000, 0 0 3px #ff7777, 0 0 6px #ff7777;
+  border: none;
+  border-radius: 4px;
+  padding: 0.65rem 1.4rem;
+  font-size: 1.05rem;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.submit:disabled {
+  background: var(--panel-border);
+  color: var(--ink-faint);
+  text-shadow: none;
+  cursor: not-allowed;
+}
+
+.error {
+  margin: 0;
+  color: #e0555f;
+  font-size: 0.85rem;
+}

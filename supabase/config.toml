@@ -1,0 +1,29 @@
+# X大脱出 (The Great X Escape) — Supabase ローカル設定
+# ポートは映画『大脱走』公開年 1963 に寄せる。dev=1963 に続けて Supabase 一式を
+# 196x 帯へ(API=1964 / DB=1965 / shadow=1966 / Studio=1967)。前作(150xx)とも非衝突。
+project_id = "the-great-x-escape"
+
+[api]
+enabled = true
+port = 1964
+schemas = ["public"]
+extra_search_path = ["public", "extensions"]
+max_rows = 1000
+
+[db]
+port = 1965
+shadow_port = 1966
+major_version = 17
+
+[studio]
+enabled = true
+port = 1967
+
+[auth]
+enabled = false
+
+[storage]
+enabled = false
+
+[realtime]
+enabled = false
