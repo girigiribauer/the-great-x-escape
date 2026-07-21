@@ -60,6 +60,9 @@
 .tName {
   font-size: 1.1rem;
   letter-spacing: 0.04em;
+  /* 長い表示名でも行からはみ出さないよう折り返し可に(名簿のハンドルと同じ予防)。 */
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 .tMeta {
   font-size: 0.8rem;

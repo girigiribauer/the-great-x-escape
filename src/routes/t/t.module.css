@@ -91,6 +91,23 @@
   margin: 0 auto;
   border-radius: 4px;
 }
+/* ゴール時: 青空の中央下に Bluesky シェアボタンを重ねる。 */
+.escapeImageWrap {
+  position: relative;
+}
+.bskyShareBtn {
+  position: absolute;
+  right: 4%;
+  bottom: 7%;
+  padding: 0.32rem 0.8rem;
+  background: rgba(17, 133, 254, 0.9);
+  color: #fff;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  text-decoration: none;
+  white-space: nowrap;
+  box-shadow: 2px 2px 4px rgb(33 33 33 / 70%);
+}
 
 /* --- 未ログイン時の細いログイン導線(枠なし) --- */
 .loginPrompt {
@@ -168,6 +185,14 @@
   color: #9ec7d6;
   text-decoration: none;
 }
+/* 長いハンドル(例: @xxxx.bsky.social)は空白が無い1トークンなので、flex 子のまま
+   だと縮まず状況列に食い込む。途中で折り返せるようにして重なりを防ぐ。 */
+.xlink,
+.xlinkEscaped,
+.bskylink {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
 .youBadge {
   font-size: 0.7rem;
   color: #d9a441;
@@ -178,6 +203,12 @@
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
+}
+/* DB 往復中の「反映中…」表示(遅延が無反応に見えないように)。 */
+.pending {
+  font-size: 0.72rem;
+  color: var(--ink-faint);
+  white-space: nowrap;
 }
 
 /* --- 右側: 操作 + 状況 --- */
@@ -342,6 +373,26 @@
   color: #e0555f;
   font-size: 0.85rem;
   margin: 0;
+}
+
+/* --- 共有アクション(𝕏 で知らせる / テキストをコピー) --- */
+.shareActions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-bottom: 0.6rem;
+}
+.xShareBtn {
+  padding: 0.4rem 0.9rem;
+  border-radius: 4px;
+  background: #000;
+  color: #fff;
+  border: 1px solid rgba(243, 230, 216, 0.35);
+  font-size: 0.85rem;
+  font-family: inherit;
+  text-decoration: none;
+  white-space: nowrap;
 }
 
 /* --- 共有ブロック(注意書き + URLコピー + 控える案内をひとまとめ) --- */

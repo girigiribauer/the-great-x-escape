@@ -1,4 +1,4 @@
-import { A, createAsync, useSearchParams } from "@solidjs/router";
+import { createAsync, useSearchParams } from "@solidjs/router";
 import { createSignal, onMount, Show, Suspense } from "solid-js";
 import SiteFooter from "~/components/SiteFooter";
 import { getTunnelCount } from "~/lib/rooms";
@@ -67,7 +67,7 @@ export default function Home() {
               <a href="/x/login?redirectTo=/dig" rel="external" class={styles.ctaBtn}>Xでログインしてトンネルを掘る</a>
             }
           >
-            <A href="/dig" class={styles.ctaBtn}>トンネルを掘る</A>
+            <a href="/dig" rel="external" class={styles.ctaBtn}>トンネルを掘る</a>
           </Show>
         </Suspense>
       </div>

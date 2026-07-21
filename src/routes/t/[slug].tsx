@@ -90,6 +90,9 @@ function MemberRow(props: {
 
   const [attestTarget, setAttestTarget] = createSignal<"migrated" | "both" | null>(null);
   const [attestHandle, setAttestHandle] = createSignal("");
+  // フルページ遷移する Bluesky 紐付けフォーム。authorize のネットワーク待ちの間、
+  // 送信済みを示すためラベルを切り替える(遷移までの無反応を防ぐ)。
+  const [linking, setLinking] = createSignal(false);
   const onAdminPick = (status: Status) => {
     if (status === "not_migrated" || status === "stayed") {
       setAttestTarget(null);
@@ -135,6 +138,9 @@ function MemberRow(props: {
                 <option value="migrated">{STATUS_LABEL.migrated}</option>
                 <option value="both">{STATUS_LABEL.both}</option>
               </select>
+              <Show when={props.busy}>
+                <span class={styles.pending}>反映中…</span>
+              </Show>
             </span>
           </Show>
         </div>
@@ -147,13 +153,15 @@ function MemberRow(props: {
       </div>
 
       <Show when={props.isMine && props.migrateTarget}>
-        <form action="/bsky/login" method="get" class={styles.bskyLine}>
+        <form action="/bsky/login" method="get" class={styles.bskyLine} onSubmit={() => setLinking(true)}>
           <input type="hidden" name="entryId" value={e().id} />
           <input type="hidden" name="slug" value={props.slug} />
           <input type="hidden" name="status" value={props.migrateTarget!} />
           <span class={styles.bskyNote}>🦋 {STATUS_LABEL[props.migrateTarget!]} には Bluesky で紐付け:</span>
           <input name="handle" placeholder="your.bsky.social" autocomplete="off" class={styles.bskyInput} />
-          <button type="submit" class={styles.bskyBtn}>紐付けて確定</button>
+          <button type="submit" class={styles.bskyBtn} disabled={linking()}>
+            {linking() ? "接続中…" : "紐付けて確定"}
+          </button>
         </form>
       </Show>
 
@@ -168,7 +176,7 @@ function MemberRow(props: {
             onInput={(ev) => setAttestHandle(ev.currentTarget.value)}
           />
           <button type="button" class={styles.bskyBtn} disabled={props.busy || !attestHandle().trim()} onClick={submitAttest}>
-            記録する
+            {props.busy ? "記録中…" : "記録する"}
           </button>
         </div>
       </Show>
@@ -268,6 +276,34 @@ export default function Room() {
     }
   };
 
+  // 共有テキスト: トンネル名で興味を引く一文 → URL → メンション(末尾)。
+  // メンションを末尾に置くのは、X で @始まりの投稿が露出減になるのを避けつつ、
+  // 大人数で長くなっても各自が手で削りやすくするため。
+  const shareText = () => {
+    const r = room();
+    if (!r) return "";
+    const mentions = r.roster.map((e) => `@${e.xHandle}`).join(" ");
+    return `トンネル ${r.tunnelName} を掘り始めました。\n${shareUrl()}\n${mentions}`;
+  };
+  const xIntentUrl = () => `https://x.com/intent/post?text=${encodeURIComponent(shareText())}`;
+  const [copiedText, setCopiedText] = createSignal(false);
+  const copyText = async () => {
+    try {
+      await navigator.clipboard.writeText(shareText());
+      setCopiedText(true);
+      setTimeout(() => setCopiedText(false), 1600);
+    } catch {
+      // clipboard 不可の環境は諦める(URL入力欄の手動コピーがある)。
+    }
+  };
+  // ゴール(全員脱出)時の Bluesky シェア文。メンションは付けない(自分の Bluesky 側への報告)。
+  const bskyShareText = () => {
+    const r = room();
+    if (!r) return "";
+    return `トンネル ${r.tunnelName} を使って、地獄から全員脱出できました！\n#X大脱出\n${shareUrl()}`;
+  };
+  const bskyIntentUrl = () => `https://bsky.app/intent/compose?text=${encodeURIComponent(bskyShareText())}`;
+
   return (
     <main class={styles.main}>
       <Suspense fallback={<p class={styles.loading}>トンネルを確認している…</p>}>
@@ -301,13 +337,23 @@ export default function Room() {
                 >
                   {/* ゴール到達: 全員が青い空へ。字幕の代わりにお祝い画像。 */}
                   <div class={styles.escapeCard}>
-                    <img
-                      src="/bluesky.png"
-                      alt="全員が壁を越え、青い空へ羽ばたいた"
-                      width="1600"
-                      height="600"
-                      class={styles.escapeImage}
-                    />
+                    <div class={styles.escapeImageWrap}>
+                      <img
+                        src="/bluesky.png"
+                        alt="全員が壁を越え、青い空へ羽ばたいた"
+                        width="1600"
+                        height="600"
+                        class={styles.escapeImage}
+                      />
+                      <a
+                        href={bskyIntentUrl()}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class={styles.bskyShareBtn}
+                      >
+                        Bluesky でシェア
+                      </a>
+                    </div>
                   </div>
                 </Show>
               </div>
@@ -357,6 +403,14 @@ export default function Room() {
                 <p class={styles.shareNote}>
                   ※ このトンネルは、URLを知っている仲間だけが出入りできます。どこでどうシェアするかは、あなたにお任せします。
                 </p>
+                <div class={styles.shareActions}>
+                  <a href={xIntentUrl()} target="_blank" rel="noopener noreferrer" class={styles.xShareBtn}>
+                    𝕏 で仲間に知らせる
+                  </a>
+                  <button type="button" class={styles.copyBtn} onClick={copyText}>
+                    {copiedText() ? "コピーしました" : "テキストをコピー"}
+                  </button>
+                </div>
                 <div class={styles.urlRow}>
                   <input
                     class={styles.urlInput}

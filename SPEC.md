@@ -241,23 +241,23 @@ DBの enum キーは変えず、**表示ラベルを劇画調に更新**した(2
 **インフラ(本番)**
 - [x] 本番 Supabase プロジェクトを用意(2026-07-20): `the-great-x-escape` / Tokyo / 無料枠。ref `cjxenpxprrecyjukxiak`。Data API=ON(supabase-js `.from()` を使うため必須)、auto-expose new tables=OFF、auto-RLS=ON。
 - [x] 本番 Supabase に migration を適用(2026-07-20): `supabase link` → `db push` で `20260718000000_initial_schema.sql` を適用。`migration list` で local==remote 確認済み。
-- [ ] 本番の `SUPABASE_URL` / `SUPABASE_ANON_KEY` / `SUPABASE_SERVICE_ROLE_KEY` を取得する
-- [ ] Vercel のデプロイ先(プロジェクト)を確保する
-- [ ] Vercel に `PUBLIC_URL` を設定する
-- [ ] Vercel に `SESSION_SECRET`(本番用の新しいランダム値)を設定する
-- [ ] Vercel に `X_CLIENT_ID` / `X_CLIENT_SECRET` を設定する
-- [ ] 本番 Bluesky 用の `OAUTH_PRIVATE_KEY`(ES256鍵)を生成する
-- [ ] Vercel に `OAUTH_PRIVATE_KEY` を設定する
+- [x] 本番の `SUPABASE_URL` / `SUPABASE_SERVICE_ROLE_KEY` を取得し Vercel へ(2026-07-21)。※ コードは anon 未使用(URL＋service_role のみ参照)なので `SUPABASE_ANON_KEY` は Vercel に入れない。
+- [x] Vercel プロジェクト確保(2026-07-21): `the-great-x-escape`(Hobby)。GitHub 連携で main push=自動デプロイ。本番 `https://the-great-x-escape.vercel.app`。
+- [x] Vercel `PUBLIC_URL`(2026-07-21): 本番URL。
+- [x] Vercel `SESSION_SECRET`(2026-07-21): 本番用に新規生成した値。
+- [x] Vercel `X_CLIENT_ID` / `X_CLIENT_SECRET`(2026-07-21)。
+- [x] `OAUTH_PRIVATE_KEY`(ES256 JWK)生成(2026-07-21)。※ 生成 JWK に kid が無く NodeOAuthClient が拒否 → `fromImportable(.., "key1")` で kid 付与する修正が必要だった(本番 metadata/jwks の 500 原因)。
+- [x] Vercel `OAUTH_PRIVATE_KEY`(2026-07-21)。
 - [x] `.env.example` に `OAUTH_PRIVATE_KEY`(生成手順つき)を追記(2026-07-20)。ES256 JWK を `@atproto/jwk-jose` の JoseKey.generate で作る one-liner つき(コマンド実動確認済み)。
-- [ ] Vercel に本番 `SUPABASE_*` を設定する
-- [ ] X アプリ側に本番の callback URL を登録する
+- [x] Vercel 本番 `SUPABASE_*`(2026-07-21)。
+- [x] X アプリに本番 callback URL 登録(2026-07-21): `https://the-great-x-escape.vercel.app/x/callback`。※ 新 console.x.com の編集画面がバグる(appId 付きURLが404)ので appId 無しURL経由で編集。
 - [x] GitHub Secrets/Variables 登録(2026-07-20・ユーザー実施): Secrets=`SUPABASE_ACCESS_TOKEN`/`SUPABASE_DB_PASSWORD`(db-migrate 用)、Variables=`APP_URL`(keepalive 用)。CI/CD ファイル(`ci.yml`/`db-migrate.yml`)もコミット `49a2f53` に同梱済み。
 
 **本番での実挙動検証**
-- [ ] 本番URLで X OAuth の一往復を再確認する
-- [ ] Bluesky 認証の帰り(`/bsky/callback`)の一往復を実アカウント(`127.0.0.1:1963`)で検証する
-- [ ] keepalive cron が本番で 200 を返すか確認する
-- [ ] モバイル/レスポンシブを実機幅で確認する
+- [x] 本番URLで X OAuth 一往復を確認(2026-07-21): ログイン→認可→`/dig` 着地 OK。
+- [x] Bluesky 認証の帰り(`/bsky/callback`)一往復を検証(2026-07-21): 本番で「完全移行」成立(全員脱出=青空演出まで確認)。※ 本番は kid 修正後に metadata/jwks 500 が解消して成立。※ ローカル(`127.0.0.1:1963`)も通し確認 — localhost→127.0.0.1 の寄せ(dev ミドルウェア)＋dev サーバー 127.0.0.1 バインド(`--host`)でコールバック接続拒否を解消。
+- [ ] keepalive cron が本番で 200 を返すか確認する(**未検証**。Actions で手動 Run。TOP のカウントが出る=`/api/tunnel-count` は生きているので通る見込み)
+- [~] モバイル/レスポンシブ確認(2026-07-21): 名簿の長ハンドルが状況列に食い込む崩れを `overflow-wrap:anywhere` で修正・本番実データで解消確認。tunnels 名も予防対策。**ログイン後の操作系(状況select/紐付け/削除)の実機確認は未**。
 
 **SEO・プライバシー**
 - [x] サイト全体のインデックス方針を決定(2026-07-20): TOP/about/login は発見のため許可、限定公開の `/t/…` と作成者専用 `/tunnels` はクロール対象外。
@@ -271,13 +271,22 @@ DBの enum キーは変えず、**表示ラベルを劇画調に更新**した(2
 
 **リポジトリ整備**
 - [x] SiteFooter のロゴを専用の背景入りロゴに確定(2026-07-20)。当初 `ogimage.png`→`logo.svg` に替えたがトンネル青が消えて平板化(私の早計な"是正"ミス)。オーナーが背景入りロゴを用意し差し替え。**方針**: 画面表示はレイヤー重ね(TOPヒーロー=tunnel.png背景＋題字SVGを重ねる。カウントは動的テキストなので焼き込み不可)、焼き込み合成は og:image 専用(`ogimage.png`)、フッターは背景入り単体ロゴ。**アセット名は役割別に整理**(同名拡張子違いの共存を解消): `logo.svg`→`logo-header.svg`(TOPヒーロー題字・透過ベクター)、フッターは `logo-footer.png`(300×240・題字＋トンネル青)。width/height=300×240 でCLS回避。dev で TOPヒーロー＋/about フッターをデスクトップ/モバイル両方、ネットワーク200も確認済み。
-- [ ] 現状の変更を意味のある単位でコミットする
+- [~] 変更をコミット: 初期一式は `e14a55b`(force-push で1コミットに集約)で本番稼働中。**2026-07-21 の UX/演出/共有バッチ(下記)は staged・未コミット・未デプロイ**。
 - [x] README を用意(2026-07-20): 概要(温トーン・非公式)/技術スタック/ローカル開発手順(196x帯・127.0.0.1:1963)/テスト/デプロイ概要/ライセンス(MIT＋源界明朝の謝辞)。日本語。
 - [x] LICENSE を用意(2026-07-20): **MIT**(純正テキスト・`Copyright (c) 2026 girigiribauer`)。GitHub のライセンス判定が効くよう本文は改変しない。**画像は全て私物(写真含む)と確認 → コード＋アセット丸ごと MIT でOK**(除外注記は不要)。
 - [x] フォント謝辞(2026-07-20): 題字は **源界明朝(フロップデザイン / SIL OFL 1.1)**。フォントファイルは同梱していない(ロゴ画像に使用のみ)ので OFL の再配布条項は不適用・MIT と非衝突。クレジットは任意だが礼儀として `/about` の免責文の下に控えめなリンク(`booth.pm/ja/items/1028548`)を設置。`about.tsx` + `.credit`。dev 目視確認済み。
 
 **ゲーム体験(ゴール)**
 - [x] 全員脱出のゴール演出(2026-07-20 完了): 名簿全員が脱獄(migrated/both)のトンネルだけ、字幕エリアを `public/bluesky.png`(青空)に差し替え。判定は `allEscaped` ヘルパー、混在は従来のランダム字幕。`t/[slug].tsx` + `t.module.css`。dev で全員脱出/混在の両分岐を目視確認済み。
+
+**追加のUX・演出・共有(2026-07-21)** ※ すべて staged・未デプロイ
+- [x] 共有機能: X intent「𝕏 で仲間に知らせる」(本文 `トンネル: {name} を掘り始めました。`→URL→メンション末尾。@始まりの露出減を避け＋大人数は手動トリム前提)、「テキストをコピー」(同文面)、ゴール時 Bluesky シェア(青空右下・控えめ。`トンネル: {name} を使って、全員地獄から脱出できました！`)。文面は「事実＋トンネル名で引き」方針(世界観は着地ページが担う)。
+- [x] FOUC 対策: フッター等の `<A>` クライアント遷移5箇所(index/tunnels/SiteFooter×3)を `<a rel="external">`(フル遷移)化。本番の遷移チラつきは `<A>` の遷移先 CSS 後読みが原因。
+- [x] favicon: `public/favicon.png`(トンネル画像 128×128・作者制作)を head に配線。
+- [x] レスポンシブ: 名簿ハンドル/トンネル名を `overflow-wrap:anywhere` で折り返し。
+- [x] ローディング表示: 状況 select「反映中…」/ 代理「記録中…」/ Bluesky 紐付け「接続中…」。
+- [x] TOP ロゴに地震風の小刻み演出: `logoQuake` 1.8s linear・delay 1s・±0.5→±3.5px クレッシェンド→ゆるやか減衰・reduced-motion で無効化。
+- [x] ローカル Bluesky 疎通の整理: dev のみ localhost→127.0.0.1 に寄せるミドルウェア(`src/middleware.ts`)を **dev ビルドのみ登録**(`app.config.ts` で `NODE_ENV!==production` 時のみ=本番バンドル非搭載) ＋ dev サーバーを 127.0.0.1 バインド(`package.json` の `--host`)。product に dev 都合を混ぜない。
 
 ---
 

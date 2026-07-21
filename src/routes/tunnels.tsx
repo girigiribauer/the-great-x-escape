@@ -1,4 +1,4 @@
-import { A, createAsync, Navigate, useAction, useSubmission } from "@solidjs/router";
+import { createAsync, Navigate, useAction, useSubmission } from "@solidjs/router";
 import { createSignal, For, Show, Suspense } from "solid-js";
 import SiteFooter from "~/components/SiteFooter";
 import { deleteRoom, getMyTunnels } from "~/lib/rooms";
@@ -36,10 +36,10 @@ export default function Tunnels() {
                 <For each={tunnels()}>
                   {(t) => (
                     <li class={styles.row}>
-                      <A href={`/t/${t.slug}`} class={styles.rowLink}>
+                      <a href={`/t/${t.slug}`} rel="external" class={styles.rowLink}>
                         <span class={styles.tName}>{t.tunnelName}</span>
                         <span class={styles.tMeta}>{t.memberCount}名 ・ {fmtDate(t.createdAt)}</span>
-                      </A>
+                      </a>
                       <Show
                         when={confirming() === t.slug}
                         fallback={

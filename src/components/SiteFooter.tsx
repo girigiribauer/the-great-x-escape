@@ -1,4 +1,4 @@
-import { A, createAsync } from "@solidjs/router";
+import { createAsync } from "@solidjs/router";
 import { Show } from "solid-js";
 import { getMyTunnels } from "~/lib/rooms";
 import { getXIdentity, xLogout } from "~/lib/xIdentity";
@@ -10,15 +10,15 @@ export default function SiteFooter(props: { showLogo?: boolean }) {
   return (
     <footer class={styles.footer}>
       <Show when={props.showLogo}>
-        <A href="/" aria-label="X大脱出 トップへ戻る" class={styles.logo}>
+        <a href="/" rel="external" aria-label="X大脱出 トップへ戻る" class={styles.logo}>
           <img src="/logo-footer.png" alt="" width="300" height="240" class={styles.logoImg} />
-        </A>
+        </a>
       </Show>
       <nav class={styles.links}>
         <Show when={(tunnels()?.length ?? 0) > 0}>
-          <A href="/tunnels" class={styles.link}>トンネル一覧</A>
+          <a href="/tunnels" rel="external" class={styles.link}>トンネル一覧</a>
         </Show>
-        <A href="/about" class={styles.link}>免責事項</A>
+        <a href="/about" rel="external" class={styles.link}>免責事項</a>
         <Show when={identity()}>
           <form action={xLogout} method="post">
             <button type="submit" class={styles.link}>ログアウト</button>

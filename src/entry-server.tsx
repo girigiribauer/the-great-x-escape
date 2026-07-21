@@ -16,6 +16,8 @@ export default createHandler(() => {
             <meta name="viewport" content="width=device-width, initial-scale=1" />
             <title>{TITLE}</title>
             <meta name="description" content={DESCRIPTION} />
+            <link rel="icon" type="image/png" href="/favicon.png" />
+            <link rel="apple-touch-icon" href="/favicon.png" />
 
             {/* OGP / X(Twitter)カード。本番では PUBLIC_URL を設定して絶対URLにする
                 (スクレイパは絶対URLを要求するため)。ローカルは相対で描画確認のみ。 */}

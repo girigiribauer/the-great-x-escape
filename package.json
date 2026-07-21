@@ -7,7 +7,7 @@
     "node": "22.x"
   },
   "scripts": {
-    "dev": "vinxi dev --port 1963",
+    "dev": "vinxi dev --port 1963 --host 127.0.0.1",
     "build": "vinxi build",
     "start": "vinxi start --port 1963",
     "typecheck": "tsc --noEmit",
