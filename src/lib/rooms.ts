@@ -20,7 +20,9 @@ export const getTunnelCount = query(async (): Promise<number> => {
   const { count, error } = await supabase
     .from("rooms")
     .select("*", { count: "exact", head: true });
-  if (error) throw error;
+  // 生の Supabase エラーオブジェクトを投げると castError が "Unknown error" 化するので、
+  // メッセージを持つ Error にして投げる(Vercel Functions ログで原因が読める)。
+  if (error) throw new Error(`tunnel count の取得に失敗: ${error.message}`);
 
   return count ?? 0;
 }, "tunnelCount");
@@ -79,7 +81,7 @@ export const getRoom = query(async (slug: string): Promise<RoomDetail | null> =>
     .select("id, slug, tunnel_name, admin_x_user_id, created_at")
     .eq("slug", slug)
     .maybeSingle<RoomRow>();
-  if (roomErr) throw roomErr;
+  if (roomErr) throw new Error(`room の取得に失敗: ${roomErr.message}`);
   if (!room) return null;
 
   const { data: entries, error: entriesErr } = await supabase
@@ -94,7 +96,7 @@ export const getRoom = query(async (slug: string): Promise<RoomDetail | null> =>
         "id" | "x_handle" | "x_user_id" | "x_verified" | "bluesky_handle" | "status" | "self_confirmed"
       >[]
     >();
-  if (entriesErr) throw entriesErr;
+  if (entriesErr) throw new Error(`entries の取得に失敗: ${entriesErr.message}`);
 
   const roster: RosterEntry[] = await Promise.all(
     (entries ?? []).map(async (e) => ({

@@ -256,7 +256,7 @@ DBの enum キーは変えず、**表示ラベルを劇画調に更新**した(2
 **本番での実挙動検証**
 - [x] 本番URLで X OAuth 一往復を確認(2026-07-21): ログイン→認可→`/dig` 着地 OK。
 - [x] Bluesky 認証の帰り(`/bsky/callback`)一往復を検証(2026-07-21): 本番で「完全移行」成立(全員脱出=青空演出まで確認)。※ 本番は kid 修正後に metadata/jwks 500 が解消して成立。※ ローカル(`127.0.0.1:1963`)も通し確認 — localhost→127.0.0.1 の寄せ(dev ミドルウェア)＋dev サーバー 127.0.0.1 バインド(`--host`)でコールバック接続拒否を解消。
-- [ ] keepalive cron が本番で 200 を返すか確認する(**未検証**。Actions で手動 Run。TOP のカウントが出る=`/api/tunnel-count` は生きているので通る見込み)
+- [x] keepalive cron が本番で 200 を返すか確認(2026-07-21): Actions で手動 Run → `Ping tunnel-count endpoint` が `https://the-great-x-escape.vercel.app/api/tunnel-count` に対し **HTTP 200 / {"count":1}**。APP_URL・エンドポイント・DB読み全て正常、以降は日次 cron に委ねる。
 - [~] モバイル/レスポンシブ確認(2026-07-21): 名簿の長ハンドルが状況列に食い込む崩れを `overflow-wrap:anywhere` で修正・本番実データで解消確認。tunnels 名も予防対策。**ログイン後の操作系(状況select/紐付け/削除)の実機確認は未**。
 
 **SEO・プライバシー**
