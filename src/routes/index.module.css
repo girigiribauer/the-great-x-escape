@@ -48,41 +48,6 @@
   width: min(260px, 54%);
   height: auto;
   display: inline-block;
-  /* 表示から少し遅れて、左右に小刻みにガタガタ揺れる(地震のような一発演出)。 */
-  animation: logoQuake 1.8s linear 1s both;
-}
-/* 立ち上がり: ±0.5px→±3.5px へ小刻みに高まりピーク(~63%)。
-   その後はゆるやかに(7ステップ)減衰して収まる。往復の速さは前後で一定(linear)。 */
-@keyframes logoQuake {
-  0% { transform: translateX(0); }
-  5% { transform: translateX(-0.5px); }
-  9% { transform: translateX(0.5px); }
-  14% { transform: translateX(-1px); }
-  18% { transform: translateX(1px); }
-  23% { transform: translateX(-1.5px); }
-  27% { transform: translateX(1.5px); }
-  32% { transform: translateX(-2px); }
-  36% { transform: translateX(2px); }
-  41% { transform: translateX(-2.5px); }
-  46% { transform: translateX(2.5px); }
-  50% { transform: translateX(-3px); }
-  55% { transform: translateX(3px); }
-  60% { transform: translateX(-3.5px); }
-  65% { transform: translateX(3px); }
-  69% { transform: translateX(-3px); }
-  74% { transform: translateX(2.5px); }
-  78% { transform: translateX(-2px); }
-  83% { transform: translateX(2px); }
-  87% { transform: translateX(-1.5px); }
-  92% { transform: translateX(1px); }
-  96% { transform: translateX(-0.5px); }
-  100% { transform: translateX(0); }
-}
-/* モーション低減を望むユーザーには揺らさない。 */
-@media (prefers-reduced-motion: reduce) {
-  .heroLogo {
-    animation: none;
-  }
 }
 
 .heroCount {

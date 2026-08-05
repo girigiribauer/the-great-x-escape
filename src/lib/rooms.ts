@@ -20,9 +20,13 @@ export const getTunnelCount = query(async (): Promise<number> => {
   const { count, error } = await supabase
     .from("rooms")
     .select("*", { count: "exact", head: true });
-  // 生の Supabase エラーオブジェクトを投げると castError が "Unknown error" 化するので、
-  // メッセージを持つ Error にして投げる(Vercel Functions ログで原因が読める)。
-  if (error) throw new Error(`tunnel count の取得に失敗: ${error.message}`);
+  // 生の Supabase エラーオブジェクトを投げると castError が "Unknown error" 化する。
+  // かつ query() の throw は client へ serialize されるだけで server ログに残らないため、
+  // ここで console.error して Vercel Functions ログに実体(code/message/details)を出す。
+  if (error) {
+    console.error("[getTunnelCount] supabase error:", error);
+    throw new Error(`tunnel count の取得に失敗: ${error.message}`);
+  }
 
   return count ?? 0;
 }, "tunnelCount");
@@ -81,7 +85,10 @@ export const getRoom = query(async (slug: string): Promise<RoomDetail | null> =>
     .select("id, slug, tunnel_name, admin_x_user_id, created_at")
     .eq("slug", slug)
     .maybeSingle<RoomRow>();
-  if (roomErr) throw new Error(`room の取得に失敗: ${roomErr.message}`);
+  if (roomErr) {
+    console.error("[getRoom] rooms supabase error:", roomErr);
+    throw new Error(`room の取得に失敗: ${roomErr.message}`);
+  }
   if (!room) return null;
 
   const { data: entries, error: entriesErr } = await supabase
@@ -96,7 +103,10 @@ export const getRoom = query(async (slug: string): Promise<RoomDetail | null> =>
         "id" | "x_handle" | "x_user_id" | "x_verified" | "bluesky_handle" | "status" | "self_confirmed"
       >[]
     >();
-  if (entriesErr) throw new Error(`entries の取得に失敗: ${entriesErr.message}`);
+  if (entriesErr) {
+    console.error("[getRoom] entries supabase error:", entriesErr);
+    throw new Error(`entries の取得に失敗: ${entriesErr.message}`);
+  }
 
   const roster: RosterEntry[] = await Promise.all(
     (entries ?? []).map(async (e) => ({
