@@ -171,7 +171,7 @@ DBの enum キーは変えず、**表示ラベルを劇画調に更新**した(2
   - `src/routes/x/callback.ts` — state照合 → コード交換 → `users/me` → `saveXIdentity` でセッション保存 → 戻り先へ
   - `src/lib/xIdentity.ts` — クライアント各ページが import する。型 `XIdentity`(不変=呼び出し側無改修)/ `parseHandle`(純粋)/ `getXIdentity`(query)/ `xLogout`(action)のみ。**top-level で server-only(`node:crypto`・`vinxi/http`)を import しない**。実処理は "use server" 本体内で `~/lib/xSession` を動的 import して呼ぶ。
   - `src/lib/xSession.ts` — ★サーバー専用★。HMAC署名Cookieの読み書き(`readXIdentity`/`saveXIdentity`/`clearXIdentity`)。**クライアントの import グラフに絶対載せない**(載せると server-only モジュールがクライアントバンドルに漏れ、`<A>` 遷移時に描画が壊れる — 実際に踏んだ)。`saveXIdentity` は RPC化しない(ハンドル捏造ログイン防止)ためここに置き、x/callback とサーバー側からのみ呼ぶ。
-  - スコープ: `tweet.read users.read`。エンドポイントは `x.com` / `api.x.com`。
+  - スコープ: `users.read` のみ(2026-08-06 に `tweet.read` を削除)。`users/me` は `users.read` だけで足り、ポストは一切読まないため、同意画面に「ポストの読み取り」を出さない(= `/about` の「投稿は読まない」と同意画面を一致させる)。エンドポイントは `x.com` / `api.x.com`。※ Developer Portal の App permissions=Read は据え置きで可(要求スコープが付与権限の部分集合になるだけ)。
   - 必要env: `X_CLIENT_ID` / `X_CLIENT_SECRET` / `SESSION_SECRET`(32文字以上)。
 - Developer Portal: 器アカウント(@xdaidasshutsu)で Production アプリ「X大脱出」を作成。App permissions=Read、Type=Web App(機密クライアント)、Callback に `http://127.0.0.1:1963/x/callback` と `http://localhost:1963/x/callback`(+本番URL)を登録。
 
@@ -197,6 +197,15 @@ DBの enum キーは変えず、**表示ラベルを劇画調に更新**した(2
 ---
 
 ## 決定事項ログ
+
+### 2026-08-06
+
+- **ログイン前でも「何のサービスか / 安全か」が機械可読で伝わるようにした**。動機: ログイン前に読めるのが世界観コピー(劇画調)と免責だけで、「XからBlueskyへ移行する名簿サービス」という機能説明がどこにも平文で無かった。加えて「収容所/脱獄/Xを脱出」の比喩は、文脈を持たない LLM に "Xを攻撃するツール" と誤読され、安全志向の要約で忌避される恐れがあった([[game-is-warm-not-competitive]] の狙いと真逆)。対応:
+  - **`/about` を全面拡充**。免責のみ → 「X大脱出とは(役割・意図＋"攻撃/晒しではない"の明言) / 名簿は限定公開 / ログインで集めるもの・集めないもの / 正確さ / 免責」の5節。ここだけ読めば役割・意図・収集する権限が分かる構成。`about.tsx` + `about.module.css`(`.section`/`.h2`/`.em`/`.list` 追加)。
+  - **TOP に補足行**。CTA(掘るボタン)の下・フッターの上に、脇役トーンの1行「これは、XからBlueskyへの引っ越しを仲間内でゆるく見守り合うお遊びです。しくみ・集めている情報は『このサイトについて』をどうぞ。」＋ `/about` リンク。ヒーロー(絶対配置)には触れず世界観を壊さない位置。あわせて `.cta` の `margin-bottom:2rem`(フッター詰まり対策のハック)を撤去 — 間にこの補足行が入ったのでマージン規律どおり gap に余白所有を戻せた。補足行は CTA から少し離すため `padding-top:3rem`(外部マージンでなく padding で内部保持)＝ gap 2rem と合わせ CTA ボタンから計 5rem。
+  - **meta description に平文1文を追記**(`entry-server.tsx`)。世界観コピーは残しつつ末尾に「XからBlueskyへの引っ越しを仲間内でゆるく見守り合うお遊びです。」。OGP カード(人間向け)は詩情を保ち、クローラ/LLM には機能が明示される。
+  - **フッターの `/about` ラベルを「免責事項」→「このサイトについて」に変更**(`SiteFooter.tsx`、全ページ共通)。/about が免責専用ではなくなったため。TOP 補足行・ページ `<h1>` と文言を「このサイトについて」で統一。
+- **X OAuth のスコープから `tweet.read` を削除**(`users.read` のみに)。`users/me`(id/handle 取得)は `users.read` だけで足り、ポストは一切読まないので、同意画面に「ポストの読み取り」を出さない=`/about` の「投稿は読まない」と一致させる(安心コピーを本当に効かせる)。ゲーム進行(ログイン/本人確認/名簿/脱獄判定)は無影響。Developer Portal の App permissions=Read は据え置きで可(要求スコープが付与権限の部分集合になるだけ)。
 
 ### 2026-07-20
 
@@ -262,7 +271,7 @@ DBの enum キーは変えず、**表示ラベルを劇画調に更新**した(2
 **SEO・プライバシー**
 - [x] サイト全体のインデックス方針を決定(2026-07-20): TOP/about/login は発見のため許可、限定公開の `/t/…` と作成者専用 `/tunnels` はクロール対象外。
 - [x] robots.txt を用意(2026-07-20): `Disallow: /t/` + `Disallow: /tunnels`。dev で配信確認済み。
-- [~] `/t/[slug]` の `noindex`: robots.txt の Disallow で実質カバー(部屋URLは推測不能・公開リンク無しなのでクローラ到達もほぼ無い)。**厳密な meta `noindex` は @solidjs/meta 追加＋配線が要るため後回し(任意)**。
+- [x] `/t/[slug]` と `/tunnels` に meta `noindex`(2026-08-06): `entry-server.tsx` で `getRequestEvent()` からパスを見て、`/t/` または `/tunnels` 始まりのときだけ `<meta name="robots" content="noindex, nofollow">` を SSR head に条件出力。**@solidjs/meta は入れず**(ライブラリ不要の軽い方法)。robots.txt の Disallow(取得拒否)に加え索引拒否も効かせ、共有リンクが外部に貼られた場合の URL 索引まで塞ぐ。curl で TOP/about=meta無し、/t/・/tunnels=noindex を確認。
 
 **コンテンツ・トーン**
 - [x] login の「審判」コピー問題を解消(2026-07-20): 該当の `/login` ページごと廃止。X OAuth 失敗は TOP(`/?x_error=…`)で通知する形に統一。唯一のUI露出だった「審判」表現も消え、SPEC「『審判』という語はUIに出さない」とも整合。TOP にエラー文＋リトライ導線を追加、`login.tsx`/`login.module.css` を削除、`x/callback` の失敗先を TOP に変更。dev で `/?x_error=` の表示確認済み。

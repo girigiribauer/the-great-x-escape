@@ -6,8 +6,10 @@ const AUTHORIZE_URL = "https://x.com/i/oauth2/authorize";
 const TOKEN_URL = "https://api.x.com/2/oauth2/token";
 const ME_URL = "https://api.x.com/2/users/me";
 
-// offline.access は付けない(= リフレッシュトークンを持たない)。
-const SCOPES = ["tweet.read", "users.read"] as const;
+// users/me(id/handle 取得)は users.read だけで足りる。tweet.read は付けない
+// — ポストは一切読まないので、同意画面に「ポストの読み取り」を出さないため
+// (/about の「投稿は読まない」と同意画面を一致させる)。offline.access も無し(=リフレッシュトークン非保持)。
+const SCOPES = ["users.read"] as const;
 
 function getConfig(): { clientId: string; clientSecret: string } {
   const clientId = process.env.X_CLIENT_ID;

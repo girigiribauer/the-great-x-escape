@@ -18,7 +18,7 @@ export default function SiteFooter(props: { showLogo?: boolean }) {
         <Show when={(tunnels()?.length ?? 0) > 0}>
           <a href="/tunnels" rel="external" class={styles.link}>トンネル一覧</a>
         </Show>
-        <a href="/about" rel="external" class={styles.link}>免責事項</a>
+        <a href="/about" rel="external" class={styles.link}>このサイトについて</a>
         <Show when={identity()}>
           <form action={xLogout} method="post">
             <button type="submit" class={styles.link}>ログアウト</button>

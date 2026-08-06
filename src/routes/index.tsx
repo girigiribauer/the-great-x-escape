@@ -72,6 +72,12 @@ export default function Home() {
         </Suspense>
       </div>
 
+      <p class={styles.about}>
+        XからBlueskyへの移行を仲間内で記録・共有する、非公式のお遊びコンテンツです。
+        <br />
+        X・Blueskyのログインは、認証（本人確認）のみに使用します。
+      </p>
+
       <SiteFooter />
     </main>
   );

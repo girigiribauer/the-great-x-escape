@@ -92,8 +92,17 @@
   flex-direction: column;
   align-items: center;
   gap: 1rem;
-  /* TOP はフッターにロゴが無く薄いので、ボタンと詰まらないよう下に余白を足す。 */
-  margin-bottom: 2rem;
+}
+
+/* CTA 直下の補足(何のサイトか＋/about 導線)。CTA より目立たせない脇役トーン。
+   CTA と少し離す余白は外部マージンでなく padding で持つ(規律: ブロックは外部マージンを持たない)。 */
+.about {
+  margin: 0;
+  padding-top: 3rem;
+  text-align: center;
+  font-size: 0.85rem;
+  line-height: 1.9;
+  color: var(--ink-dim);
 }
 
 .ctaBtn {
